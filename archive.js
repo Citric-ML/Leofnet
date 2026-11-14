@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const container = document.getElementById("archive-container");
     // Remember to update this number every time a new edition is published
-    const totalPublications = 2;
+    const totalPublications = 1;
     const repopath = "https:/citric-ml.github.io/leofnet";
 
     // Loop through publications

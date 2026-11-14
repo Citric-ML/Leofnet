@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+        <link href="./main.css" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Geist+Pixel&display=swap" rel="stylesheet">
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <textarea id="md-input" rows="10" cols="50">Enter text here ;P (This isn't technically the official site, yes I can use goofy emoticons)</textarea>
+        <div class="screen" id="html-output"></div>
+
+        <script>
+            const input = document.getElementById('md-input');
+            const output = document.getElementByID('html-output');
+
+            const render = () => {
+                output.innerHTML = marked.parse(input.value); //marked is a cool zero-dependency library you can use for these kinds of things
+            };
+
+            input.addEventListener('input', render);
+            render();
+        </script>
+    </body>
+</html>
+
