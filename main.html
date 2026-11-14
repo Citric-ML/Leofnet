@@ -113,21 +113,6 @@
                 </div>
         </section>
         <canvas id="lifeCanvas"></canvas>
-        <script type = "module">
-            import {mainLoop, createGrid} from './main.js';
-            const canvas = document.getElementById('lifeCanvas');
-            const ctx = canvas.getContext('2d');
-
-            // Define cell size and grid dimensions
-            const cellSize = 2;
-            const numRows = Math.floor(canvas.height / cellSize);
-            const numCols = Math.floor(canvas.width / cellSize);
-            const color = '#00040D'
-            
-            let grid = createGrid();
-            let isRunning = false;
-            let animationId = null;
-            mainLoop();
-        </script>
+        <script src = "./main.js"></script>
     </body>
 </html>
