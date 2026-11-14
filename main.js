@@ -83,3 +83,5 @@ function mainLoop() {
     }, 100);
 }
 
+
+mainLoop();
