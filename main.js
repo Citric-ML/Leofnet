@@ -110,7 +110,7 @@ export function distortion_map(distort_object) {
 }
 
 // inject shared SVG filter to avoid safari limitations on referencing external filters from css.
-export function initFilter() {
+async function initFilter() {
     try {
         const response = await fetch('./assets/filters.svg');
         const svgText = await response.text();
