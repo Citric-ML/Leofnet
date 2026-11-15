@@ -4,8 +4,7 @@ function createGrid(numRows, numCols) {
     for (let i = 0; i < numRows; i++) {
         grid[i] = [];
         for (let j = 0; j < numCols; j++) {
-            grid[i][j] = Math.
-            random() > 0.7 ? 1 : 0; // Random initialization
+            grid[i][j] = Math.random() > 0.7 ? 1 : 0; // Random initialization
         }
     }
     return grid;
