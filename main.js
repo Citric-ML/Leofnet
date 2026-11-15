@@ -106,11 +106,13 @@ export function distortion_map(distort_object) {
         }
     }
     ctx.putImageData(imgData, 0, 0);
-    distort_object.setAttribute("href", canvas.toDataURL());
+    const dataUrl = canvas.toDataURL();
+    distort_object.setAttribute("href", dataUrl);
+    distort_object.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", dataUrl);
 }
 
 // inject shared SVG filter to avoid safari limitations on referencing external filters from css.
-async function initFilter() {
+export async function initFilter() {
     try {
         const response = await fetch('./assets/filters.svg');
         const svgText = await response.text();
