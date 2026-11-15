@@ -93,7 +93,7 @@ export function distortion_map(distort_object) {
             const r2 = nx * nx + ny * ny;
 
             // push pixels (adjust const in distortion to increase/decrease distortion)
-            const distortion = r2 * 0.5; 
+            const distortion = r2 * 1.2; 
             const dx = -nx * distortion;
             const dy = -ny * distortion;
 
