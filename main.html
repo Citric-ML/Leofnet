@@ -109,10 +109,13 @@
                     <p>The Substack Partition of the Leof Project is essentially the archive of monthly installments. All the articles you will find here you can also find on Substack.</p>
                     <button class="img-button">
                         <a href="https://leoffen.substack.com">LME Substack</a>
-                </button>
+                    </button>
                 </div>
         </section>
         <canvas id="lifeCanvas"></canvas>
-        <script src = "./main.js"></script>
+        <script type="module" src = "./main.js">
+            import {init_life} from './main.js';
+            init_life('081138');
+        </script>
     </body>
 </html>

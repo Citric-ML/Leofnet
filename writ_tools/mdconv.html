@@ -19,11 +19,10 @@
             const output = document.getElementById('html-output');
 
             const render = () => {
-                output.innerHTML = DOMPurity.sanitize(marked.parse(input.value)); //marked is a cool zero-dependency library you can use for these kinds of things. DOMPurify is used for safety reasons.
+                output.innerHTML = DOMPurify.sanitize(marked.parse(input.value)); //marked is a cool zero-dependency library you can use for these kinds of things. DOMPurify is used for safety reasons.
             };
-
-            input.addEventListener('input', render);
             render();
+            input.addEventListener("input", render);
         </script>
     </body>
 </html>
