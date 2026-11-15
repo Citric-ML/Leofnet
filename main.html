@@ -112,10 +112,14 @@
                     </button>
                 </div>
         </section>
-        <canvas id="lifeCanvas"></canvas>
+
+                
+        <canvas id="lifeCanvas" class="barrel"></canvas>
         <script type="module">
-            import { init_life } from './main.js';
+            import { init_life, initFilter } from './main.js';
             init_life('#081138');
+
+            initFilter();
         </script>
     </body>
 </html>

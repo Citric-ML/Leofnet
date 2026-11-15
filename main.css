@@ -188,3 +188,8 @@ ul li a:hover {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.barrel {
+    filter: url('#barrel-distortion');
+    overflow: hidden;
+}

@@ -1,0 +1,9 @@
+<svg style="width: 0; height: 0; position: absolute;" aria-hidden="true">
+    <defs>
+        <filter id="barrel-distortion" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+            <feImage id="displacement-map" result="map" width="256" height="256" preserveAspectRatio="none" />
+            <feDisplacementMap in="SourceGraphic" in2="map" scale="40" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </defs>
+</svg>
+

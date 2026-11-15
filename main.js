@@ -75,3 +75,56 @@ export function init_life(inp_color) {
     let grid = createGrid(numRows, numCols);
     mainLoop(canvas, ctx, cellSize, numRows, numCols, color, grid);
 }
+
+export function distortion_map(distort_object) {
+    
+    const size = 256;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    const imgData = ctx.createImageData(size, size);
+
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            // Normalize coordinates to -1 to 1
+            const nx = (x / (size - 1)) * 2 - 1;
+            const ny = (y / (size - 1)) * 2 - 1;
+            const r2 = nx * nx + ny * ny;
+
+            // push pixels (adjust const in distortion to increase/decrease distortion)
+            const distortion = r2 * 0.5; 
+            const dx = -nx * distortion;
+            const dy = -ny * distortion;
+
+            // Map -1..1 offset into 0..255 RGB channels (128 = neutral)
+            const idx = (y * size + x) * 4;
+            imgData.data[idx] = Math.min(255, Math.max(0, 128 + dx * 127));     // R (X)
+            imgData.data[idx + 1] = Math.min(255, Math.max(0, 128 + dy * 127)); // G (Y)
+            imgData.data[idx + 2] = 128;                                        // B
+            imgData.data[idx + 3] = 255;                                        // Alpha
+        }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    distort_object.setAttribute("href", canvas.toDataURL());
+}
+
+// inject shared SVG filter to avoid safari limitations on referencing external filters from css.
+export function initFilter() {
+    try {
+        const response = await fetch('./assets/filters.svg');
+        const svgText = await response.text();
+        
+        const div = document.createElement('div');
+        div.innerHTML = svgText;
+        document.body.appendChild(div.firstElementChild);
+
+        // Target the newly injected element and apply the canvas map
+        const obj = document.getElementById('displacement-map');
+        if (obj) {
+            distortion_map(obj);
+        }
+    } catch (e) {
+        console.error("Failed to load shared distortion filter:", e);
+    }
+}
