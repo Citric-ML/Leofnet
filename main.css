@@ -155,10 +155,14 @@ ul li a:hover {
     padding: 10px;
     margin: 30px;
     color: white;
+    background-color: black;
     border: 5px solid transparent;
     border-image: url('./assets/border-frame.png') 30 round;
 }
 
+details {
+    background-color: black;
+}
 .quoteblock {
     width: 60%;
     height: 100%;
