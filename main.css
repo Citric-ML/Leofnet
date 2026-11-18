@@ -189,28 +189,25 @@ ul li a:hover {
   cursor: pointer;
 }
 
+.crt-container {
+    position: relative;
+    overflow: hidden; /* Hides any overflowing edge distortion */
+    width: 100vw;
+    height: 100vh;
+    background: #000; /* Optional background to fill any sub-pixel gaps */
+}
+
+.crt-container canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .barrel {
     filter: url('#barrel-distortion');
-    overflow: hidden;
-    display: block;
+    /* Scales up slightly to compensate for the inward barrel pinch */
+    transform: scale(1.15); 
+    transform-origin: center;
 }
 
-/* Container to lock the overlay bounds */
-.crt-frame {
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-}
 
-/* Scanlines and Vignette Overlay */
-.crt-frame::after {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 0; left: 0; bottom: 0; right: 0;
-    /* Repeating horizontal lines for scanlines + dark radial gradient for vignette */
-    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
-                radial-gradient(circle, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.75) 100%);
-    background-size: 100% 4px, 100% 100%;
-    pointer-events: none; /* Allows clicks to pass right through */
-}

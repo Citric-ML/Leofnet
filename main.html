@@ -112,15 +112,14 @@
                     </button>
                 </div>
         </section>
-
-        <div class="crt-frame">
-            <canvas id="lifeCanvas" class="barrel"></canvas>
+        <div class="crt-container">
+            <canvas id="lifeCanvas"></canvas>
+            <div class="scanlines"></div>
         </div>
         <script type="module">
-            import { init_life, initFilter } from './main.js';
+            import { init_life, init_svg_filter } from './main.js';
             init_life('#081138');
-
-            initFilter();
+            init_svg_filter(0.5, 100);
         </script>
     </body>
 </html>

@@ -56,7 +56,9 @@ function countNeighbors(row, col, numRows, numCols, grid) {
 function mainLoop(canvas, ctx, cellSize, numRows, numCols, color, grid) {
     grid = updateGrid(numRows, numCols, grid);
     drawGrid(canvas, ctx, cellSize, numRows, numCols, color, grid);
-    
+
+    drawScanlines(ctx, canvas.width, canvas.height);
+
     setTimeout(() => {
         requestAnimationFrame(() => mainLoop(canvas, ctx, cellSize, numRows, numCols, color, grid));
     }, 100);
@@ -76,57 +78,106 @@ export function init_life(inp_color) {
     mainLoop(canvas, ctx, cellSize, numRows, numCols, color, grid);
 }
 
-export function distortion_map(distort_object) {
+function generateBarrelMap(size = 256, strength = 0.5) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.createImageData(size, size);
+  const data = imgData.data;
+
+  for (let y = 0; y < size; y++) {
+    // Normalize y to [-1, 1]
+    const ny = (y / (size - 1)) * 2 - 1;
     
-    const size = 256;
-    const canvas = document.createElement("canvas");
-    canvas.width = size;
-    canvas.height = size;
-    const ctx = canvas.getContext("2d");
-    const imgData = ctx.createImageData(size, size);
+    for (let x = 0; x < size; x++) {
+      // Normalize x to [-1, 1]
+      const nx = (x / (size - 1)) * 2 - 1;
+      
+      // Radial distance squared from center
+      const r2 = nx * nx + ny * ny;
+      
+      // Pull pixels inward near edges to create outward barrel bulge
+      // Negative sign pulls source pixels toward the center
+      const dx = -nx * r2 * strength;
+      const dy = -ny * r2 * strength;
 
-    for (let y = 0; y < size; y++) {
-        for (let x = 0; x < size; x++) {
-            // Normalize coordinates to -1 to 1
-            const nx = (x / (size - 1)) * 2 - 1;
-            const ny = (y / (size - 1)) * 2 - 1;
-            const r2 = nx * nx + ny * ny;
+      // Map [-1, 1] offset to [0, 255] color channel (128 = neutral)
+      const r = Math.max(0, Math.min(255, Math.round((dx * 0.5 + 0.5) * 255)));
+      const g = Math.max(0, Math.min(255, Math.round((dy * 0.5 + 0.5) * 255)));
 
-            // push pixels (adjust const in distortion to increase/decrease distortion)
-            const distortion = r2 * 1.2; 
-            const dx = -nx * distortion;
-            const dy = -ny * distortion;
-
-            // Map -1..1 offset into 0..255 RGB channels (128 = neutral)
-            const idx = (y * size + x) * 4;
-            imgData.data[idx] = Math.min(255, Math.max(0, 128 + dx * 127));     // R (X)
-            imgData.data[idx + 1] = Math.min(255, Math.max(0, 128 + dy * 127)); // G (Y)
-            imgData.data[idx + 2] = 128;                                        // B
-            imgData.data[idx + 3] = 255;                                        // Alpha
-        }
+      const idx = (y * size + x) * 4;
+      data[idx] = r;     // X displacement
+      data[idx + 1] = g; // Y displacement
+      data[idx + 2] = 128; // Neutral Blue
+      data[idx + 3] = 255; // Full Alpha
     }
-    ctx.putImageData(imgData, 0, 0);
-    const dataUrl = canvas.toDataURL();
-    distort_object.setAttribute("href", dataUrl);
-    distort_object.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", dataUrl);
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  return canvas.toDataURL('image/png');
 }
 
-// inject shared SVG filter to avoid safari limitations on referencing external filters from css.
-export async function initFilter() {
-    try {
-        const response = await fetch('./assets/filters.svg');
-        const svgText = await response.text();
-        
-        const div = document.createElement('div');
-        div.innerHTML = svgText;
-        document.body.appendChild(div.firstElementChild);
-
-        // Target the newly injected element and apply the canvas map
-        const obj = document.getElementById('displacement-map');
-        if (obj) {
-            distortion_map(obj);
-        }
-    } catch (e) {
-        console.error("Failed to load shared distortion filter:", e);
+function drawScanlines(ctx, width, height) {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Adjust opacity to taste
+    for (let y = 0; y < height; y += 4) {   // Every 4th pixel draws a line
+        ctx.fillRect(0, y, width, 2);       // 2px height scanline
     }
+}
+export function init_svg_filter(strength = 0.25, scale = 60) {
+    const dataUrl = generateBarrelMap(256, 0.4);
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("aria-hidden", "true");
+    svg.style.position = "absolute";
+    svg.style.width = "0";
+    svg.style.height = "0";
+
+    svg.innerHTML = `
+        <defs>
+            <!-- Expanded filter bounds prevent the inner-screen clipping artifact -->
+            <filter id="barrel-distortion" x="-30%" y="-30%" width="160%" height="160%" filterUnits="objectBoundingBox" color-interpolation-filters="sRGB">
+                <feImage href="${dataUrl}" result="map" width="100%" height="100%" preserveAspectRatio="none" />
+                <feDisplacementMap in="SourceGraphic" in2="map" scale="${scale}" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    `;
+
+    document.body.appendChild(svg);
+}
+
+export function draw_test_grid(ctx) {
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Clear background
+    ctx.fillStyle = '#081138';
+    ctx.fillRect(0, 0, width, height);
+
+    // Draw grid lines
+    ctx.strokeStyle = '#00ffcc';
+    ctx.lineWidth = 2;
+
+    const step = 40;
+    for (let x = 0; x <= width; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y <= height; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+    }
+
+    // Draw a center reference circle to check symmetry
+    ctx.strokeStyle = '#ff0055';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(width / 2, height / 2, width / 4, 0, Math.PI * 2);
+    ctx.stroke();
 }
